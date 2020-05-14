@@ -70,6 +70,7 @@ namespace HART.Messages
                 Limiter = limiter,
                 FrameFormat = frameFormat,
                 IsBatchMode = isBatchMode,
+                Command = Convert.FromByte<int>(command),
                 CommunicationError = CommunicationErrorList.GetErrorDescription(code[0]),
                 ResponseCode = Convert.FromByte<int>(code),
                 Data = data

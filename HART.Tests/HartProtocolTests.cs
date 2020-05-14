@@ -32,7 +32,7 @@ namespace HART.Tests
             var request = new Request(false, 0)
             {
                 Preamble = 5,
-                Command = 0
+                Command = 3
             };
 
             hart.Connect();

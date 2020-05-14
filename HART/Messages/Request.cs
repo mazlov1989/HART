@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.ComponentModel;
 
 namespace HART.Messages
 {
@@ -24,10 +25,7 @@ namespace HART.Messages
         /// <param name="isSecondaryMaster"><see langword="true"/>, если запрос передает вторичный мастер.</param>
         public Request(
             bool isSecondaryMaster
-            ) : base(SetAddress(isSecondaryMaster))
-        {
-            IsSecondaryMaster = isSecondaryMaster;
-        }
+            ) : base(SetAddress(isSecondaryMaster)) => IsSecondaryMaster = isSecondaryMaster;
 
         /// <summary>
         /// Создать запрос для передачи адресу в формате короткого фрейма.
@@ -134,7 +132,7 @@ namespace HART.Messages
         /// <summary>
         /// Установить в качестве адреса устройства широковещательный адрес и преобразовать его в массив байтов.
         /// </summary>
-        private static byte[] SetAddress(bool isSecondaryMaster) =>
+        public static byte[] SetAddress(bool isSecondaryMaster) =>
             isSecondaryMaster ? BitConverter.GetBytes(0x80000) : BitConverter.GetBytes(0x00000);
 
         /// <summary>
@@ -143,15 +141,15 @@ namespace HART.Messages
         /// <param name="isSecondaryMaster"><see langword="true"/>, если данное master-устройство вторичное.</param>
         /// <param name="deviceAddress">Адрес устройства.</param>
         /// <returns>Адрес устройства в виде массива байтов.</returns>
-        private static byte[] SetAddress(bool isSecondaryMaster, int deviceAddress)
+        public static byte[] SetAddress(bool isSecondaryMaster, int deviceAddress)
         {
             if (deviceAddress < 0 || deviceAddress > 15)
-                throw new ArgumentOutOfRangeException(nameof(deviceAddress),"В формате короткого кадра адрес прибора должен быть в диапазоне 0..15");
+                throw new ArgumentOutOfRangeException(nameof(deviceAddress), "В формате короткого кадра адрес прибора должен быть в диапазоне 0..15");
 
             var address = new BitArray(8);
             var bDeviceAddress = new BitArray(BitConverter.GetBytes(deviceAddress));
 
-            address.Set(7, isSecondaryMaster);
+            address.Set(7, !isSecondaryMaster);
 
             for (var i = 0; i < 4; i++)
                 address.Set(i, bDeviceAddress[i]);
@@ -171,7 +169,7 @@ namespace HART.Messages
         /// <param name="deviceTypeCode">Код типа устройства.</param>
         /// <param name="deviceSerialNumber">Серийный номер устройства.</param>
         /// <returns>Адрес устройства в виде массива байтов.</returns>
-        private static byte[] SetAddress(bool isSecondaryMaster, int manufacturerId, int deviceTypeCode, int deviceSerialNumber)
+        public static byte[] SetAddress(bool isSecondaryMaster, int manufacturerId, int deviceTypeCode, int deviceSerialNumber)
         {
             if (manufacturerId < 0)
                 throw new ArgumentException("Значение ID производителя не должно быть меньше нуля.");
@@ -187,19 +185,22 @@ namespace HART.Messages
             var bDeviceSerialNumber = new BitArray(BitConverter.GetBytes(deviceSerialNumber));
             var address = new BitArray(40);
 
-            address.Set(39, isSecondaryMaster);
+            var index = 39;
+            address.Set(index--, !isSecondaryMaster);
+            address.Set(index--, false);
 
-            for (var i = 0; i < 6; i++)
-                address.Set(32 + i, bManufacturerId[i]);
+            for (var i = 6; i > 0; i--)
+                address.Set(index--, bManufacturerId[i-1]);
 
-            for (var i = 0; i < 8; i++)
-                address.Set(24 + i, bDeviceTypeCode[i]);
+            for (var i = 8; i > 0; i--)
+                address.Set(index--, bDeviceTypeCode[i - 1]);
 
-            for (var i = 0; i < 24; i++)
-                address.Set(i, bDeviceSerialNumber[i]);
+            for (var i = 24; i > 0; i--)
+                address.Set(index--, bDeviceSerialNumber[i - 1]);
 
             var result = new byte[5];
             address.CopyTo(result, 0);
+            Array.Reverse(result);
 
             return result;
         }
@@ -211,7 +212,7 @@ namespace HART.Messages
         private byte[] GetCommand()
         {
             if (Command < 0 || Command > 65534)
-                throw new ArgumentOutOfRangeException(nameof(Command),"Номер команды должен быть в диапазоне 0..65534");
+                throw new ArgumentOutOfRangeException(nameof(Command), "Номер команды должен быть в диапазоне 0..65534");
 
             byte[] result;
             var bCommand = BitConverter.GetBytes(Command);
@@ -259,6 +260,5 @@ namespace HART.Messages
 
             return result;
         }
-
     }
 }

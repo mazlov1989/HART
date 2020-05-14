@@ -96,5 +96,11 @@ namespace HART.Messages
                 default: return (T)(object)Data;
             }
         }
+
+        /// <summary>
+        /// Получить адрес устройства.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetAddress() => Address;
     }
 }

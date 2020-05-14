@@ -52,6 +52,7 @@ namespace HART
         /// Отправить запрос.
         /// </summary>
         /// <param name="message">Сообщение-запрос.</param>
+        /// <returns>Адрес устройства, которому было отправлено сообщение.</returns>
         public void Request(Request message) => _connector.Request(message.Serialize());
 
         /// <summary>

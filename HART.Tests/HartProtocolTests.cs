@@ -17,8 +17,8 @@ namespace HART.Tests
         [TestMethod]
         public void ConnectTest()
         {
-            const int portNumber = 3; // Номер COM-порта.
-            const int numberOfRepeats = 4; // Количество повторов запроса команды для теста получения серии ответов..
+            const int portNumber = 6; // Номер COM-порта.
+            const int numberOfRepeats = 3; // Количество повторов запроса команды для теста получения серии ответов..
 
             // Перед началом теста, необходимо убетиться, что COM-порт доступен и не занят. Иначе тест выполнять не имеет смысла.
             if (!SerialPortAdapter.IsPortAccessible(portNumber))

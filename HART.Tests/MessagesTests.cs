@@ -20,15 +20,12 @@ namespace HART.Tests
                 2
             };
 
-            var value = "Hello world";
 
             var request = new Request(false, 0)
             {
                 Preamble = 3,
                 Command = 0
             };
-
-            request.AddDate(value);
 
             var actual = request.Serialize();
 

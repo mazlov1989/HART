@@ -25,7 +25,7 @@ namespace HART.Tests
                 Assert.Inconclusive();
 
             var connector = new SerialPortAdapter(portNumber);
-            hart = new HartProtocol(connector);
+            hart = new HartProtocol(connector, true, FrameFormats.Short);
 
             connector.DataReceived += NewData;
 
@@ -52,5 +52,16 @@ namespace HART.Tests
         }
 
         private void NewData() => response.Enqueue(hart.Messages.Dequeue());
+
+        [TestMethod]
+        public void ShortAddressTest()
+        {
+            Assert.IsTrue(Request.SetAddress(true, 3)[0]==131);
+            Assert.IsTrue(Request.SetAddress(true, 15)[0] == 143);
+            Assert.IsTrue(Request.SetAddress(true, 8)[0] == 136);
+            Assert.IsTrue(Request.SetAddress(false, 2)[0] == 2);
+            Assert.IsTrue(Request.SetAddress(false, 9)[0] == 9);
+            Assert.IsTrue(Request.SetAddress(false, 13)[0] == 13);
+        }
     }
 }

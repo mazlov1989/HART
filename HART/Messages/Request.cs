@@ -146,18 +146,12 @@ namespace HART.Messages
             if (deviceAddress < 0 || deviceAddress > 15)
                 throw new ArgumentOutOfRangeException(nameof(deviceAddress), "В формате короткого кадра адрес прибора должен быть в диапазоне 0..15");
 
-            var address = new BitArray(8);
-            var bDeviceAddress = new BitArray(BitConverter.GetBytes(deviceAddress));
+            var address = (byte)(deviceAddress & 0xF);
 
-            address.Set(7, !isSecondaryMaster);
+            if (isSecondaryMaster)
+                address |= 0x80;
 
-            for (var i = 0; i < 4; i++)
-                address.Set(i, bDeviceAddress[i]);
-
-            var result = new byte[1];
-            address.CopyTo(result, 0);
-
-            return result;
+            return new[]{address};
         }
 
         /// <summary>

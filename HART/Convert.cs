@@ -33,6 +33,7 @@ namespace HART
 
             switch (value)
             {
+                case byte by: return new[] {by};
                 case byte[] ba: return ba;
                 case string s: return ToByte(s);
                 case float f: return ToByte(f);

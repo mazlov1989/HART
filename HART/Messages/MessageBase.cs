@@ -50,6 +50,11 @@ namespace HART.Messages
         public int Command { get; set; }
 
         /// <summary>
+        /// Добавить данные для отправки.
+        /// </summary>
+        public void AddDate(byte[] value) => Data = value;
+
+        /// <summary>
         /// Преобразовать передаваемые данные в массив байтов.
         /// <para>Поддерживаются следующие типы выходных данных:</para>
         /// <list type="bullet">

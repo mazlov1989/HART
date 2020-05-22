@@ -14,6 +14,16 @@ namespace HART
         private readonly IConnector _connector;
 
         /// <summary>
+        /// <see langword="true"/>, если связь установлена со вторичным мастером.
+        /// </summary>
+        public bool IsSecondaryMaster { get; }
+
+        /// <summary>
+        /// Формат кадра.
+        /// </summary>
+        public FrameFormats FrameFormat { get; }
+
+        /// <summary>
         /// Полученные сообщения.
         /// </summary>
         public Queue<Response> Messages = new Queue<Response>();
@@ -32,9 +42,14 @@ namespace HART
         /// Инициализировать соединение со slave-устройством по HART-протоколу.
         /// </summary>
         /// <param name="connector">Интерфейс обмена данными между устройствами.</param>
-        public HartProtocol(IConnector connector)
+        /// <param name="isSecondaryMaster"><see langword="true"/>, если связь установлена со вторичным мастером.</param>
+        /// <param name="frameFormat">Формат кадра.</param>
+        public HartProtocol(IConnector connector, bool isSecondaryMaster, FrameFormats frameFormat)
         {
             _connector = connector;
+            IsSecondaryMaster = isSecondaryMaster;
+            FrameFormat = frameFormat;
+
             _connector.DataReceived += GetNewMessage;
         }
 

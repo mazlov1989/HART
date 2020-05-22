@@ -32,10 +32,7 @@ namespace HART.Messages
         /// Создать сообщение.
         /// </summary>
         /// <param name="address">Адрес slave-устройства.</param>
-        protected MessageBase(byte[] address)
-        {
-            Address = address;
-        }
+        protected MessageBase(byte[] address) => Address = address;
 
         /// <summary>
         /// Количество символов в преамбуле.
@@ -96,6 +93,12 @@ namespace HART.Messages
                 default: return (T)(object)Data;
             }
         }
+
+        /// <summary>
+        /// Получить данные.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetDate() => Data;
 
         /// <summary>
         /// Получить адрес устройства.

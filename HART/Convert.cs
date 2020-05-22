@@ -99,7 +99,7 @@ namespace HART
         /// </summary>
         /// <param name="value">Массив байтов для преобразования.</param>
         /// <returns></returns>
-        private static string FromByteToString(byte[] value) => Encoding.ASCII.GetString(value);
+        private static string FromByteToString(byte[] value) => Encoding.ASCII.GetString(value.Reverse());
 
         /// <summary>
         /// Преобразовать <see cref="float"/> в массив байтов.
@@ -113,7 +113,7 @@ namespace HART
         /// </summary>
         /// <param name="value">Массив байтов для преобразования.</param>
         /// <returns></returns>
-        private static float FromByteToFloat(byte[] value) => BitConverter.ToSingle(value, 0);
+        private static float FromByteToFloat(byte[] value) => BitConverter.ToSingle(value.Reverse(), 0);
 
         /// <summary>
         /// Преобразовать <see cref="double"/> в массив байтов.
@@ -127,7 +127,7 @@ namespace HART
         /// </summary>
         /// <param name="value">Массив байтов для преобразования.</param>
         /// <returns></returns>
-        private static double FromByteToDouble(byte[] value) => BitConverter.ToDouble(value, 0);
+        private static double FromByteToDouble(byte[] value) => BitConverter.ToDouble(value.Reverse(), 0);
 
         /// <summary>
         /// Преобразовать <see cref="ushort"/> в массив байтов.
@@ -141,7 +141,7 @@ namespace HART
         /// </summary>
         /// <param name="value">Массив байтов для преобразования.</param>
         /// <returns></returns>
-        private static ushort FromByteToUInt16(byte[] value) => BitConverter.ToUInt16(value, 0);
+        private static ushort FromByteToUInt16(byte[] value) => BitConverter.ToUInt16(value.Reverse(), 0);
 
         /// <summary>
         /// Преобразовать массив байтов в <see cref="short"/>.
@@ -158,7 +158,7 @@ namespace HART
         private static byte[] ToByte(uint value)
         {
             if (value > 16777215)
-                throw new ArgumentOutOfRangeException(nameof(value),"Максимально допустимое значение равно 16777215");
+                throw new ArgumentOutOfRangeException(nameof(value), "Максимально допустимое значение равно 16777215");
 
             var b = BitConverter.GetBytes(value);
             var result = new byte[3];
@@ -178,7 +178,7 @@ namespace HART
         {
             var nByte = new byte[4];
             value.CopyTo(nByte, 0);
-
+            
             return BitConverter.ToUInt32(nByte, 0);
         }
 
@@ -210,9 +210,11 @@ namespace HART
         /// <returns></returns>
         private static DateTime FromByteToDate(byte[] value)
         {
-            var day = BitConverter.ToInt32(new byte[] { value[0], 0, 0, 0 }, 0);
-            var month = BitConverter.ToInt32(new byte[] { value[1], 0, 0, 0 }, 0);
-            var year = BitConverter.ToInt32(new byte[] { value[2], 0, 0, 0 }, 0);
+            var date = value.Reverse();
+
+            var day = BitConverter.ToInt32(new byte[] { date[0], 0, 0, 0 }, 0);
+            var month = BitConverter.ToInt32(new byte[] { date[1], 0, 0, 0 }, 0);
+            var year = BitConverter.ToInt32(new byte[] { date[2], 0, 0, 0 }, 0);
 
             return new DateTime(year + 1900, month, day);
         }
@@ -244,7 +246,21 @@ namespace HART
             if (value.Length > 1)
                 throw new ArgumentOutOfRangeException(nameof(value), "Переполнение массива значение. Допускается только 1 байт данных.");
 
-            return new BitArray(value);
+            return new BitArray(value.Reverse());
+        }
+
+        /// <summary>
+        /// Изменяет порядок элементов во всем массиве байт на обратный.
+        /// </summary>
+        /// <param name="source">Исходный массив</param>
+        /// <returns></returns>
+        private static byte[] Reverse(this byte[] source)
+        {
+            var reverse = new byte[source.Length];
+            source.CopyTo(reverse, 0);
+            Array.Reverse(reverse);
+
+            return reverse;
         }
     }
 }

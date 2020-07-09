@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.ComponentModel;
 
 namespace HART.Messages
 {
@@ -148,10 +147,10 @@ namespace HART.Messages
 
             var address = (byte)(deviceAddress & 0xF);
 
-            if (isSecondaryMaster)
+            if (!isSecondaryMaster)
                 address |= 0x80;
 
-            return new[]{address};
+            return new[] { address };
         }
 
         /// <summary>
@@ -184,7 +183,7 @@ namespace HART.Messages
             address.Set(index--, false);
 
             for (var i = 6; i > 0; i--)
-                address.Set(index--, bManufacturerId[i-1]);
+                address.Set(index--, bManufacturerId[i - 1]);
 
             for (var i = 8; i > 0; i--)
                 address.Set(index--, bDeviceTypeCode[i - 1]);

@@ -172,12 +172,12 @@ namespace HART.Connectors
                         continue;
                     }
 
-                    var isLimiter = value == 0x01 || value == 0x06 || value == 0x81 || value == 0x86;
+                    var isLimiter = value is 0x01 or 0x06 or 0x81 or 0x86;
                     if (_numberOfPreambleBytes >= 2 && isLimiter)
                     {
                         _isPreambleSought = false;
                         _isPreambleFound = true;
-                        _addressIsLong = value == 0x86 || value == 0x81;
+                        _addressIsLong = value is 0x86 or 0x81;
                         _newData.Add(value);
                         continue;
                     }

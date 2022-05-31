@@ -53,12 +53,22 @@ namespace HART
         /// <summary>
         /// Открыть соединение со slave-устройством.
         /// </summary>
-        public void Connect() => _connector.Connect();
+        public bool Connect()
+        {
+            _connector.Connect();
+
+            return IsConnected;
+        }
 
         /// <summary>
         /// Закрыть соединение со slave-устройством.
         /// </summary>
-        public void Disconnect() => _connector.Disconnect();
+        public bool Disconnect()
+        {
+            _connector.Disconnect();
+
+            return IsConnected;
+        }
 
         /// <summary>
         /// Отправить запрос.

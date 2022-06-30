@@ -113,7 +113,7 @@
             var expected = data[^1];
             byte actual = 0;
 
-            for (var i = offset; i < data.Count - 2; i++)
+            for (var i = offset; i < data.Count - 1; i++)
                 actual ^= data[i];
 
             return expected == actual;

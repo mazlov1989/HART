@@ -33,7 +33,7 @@
         /// </summary>
         /// <param name="buffer">Данный для десериализации.</param>
         /// <exception cref="ArgumentException">Данные не прошли проверку на нечетность. Контрольная сумма не совпадает.</exception>
-        public static Response Deserialize(byte[] buffer)
+        public static Response Deserialize(IReadOnlyList<byte> buffer)
         {
             var offset = 0;
 
@@ -52,10 +52,7 @@
             offset += address.Length;
 
             var command = SetCommand(buffer, offset);
-            offset += command.Length;
-
-            //var counter = buffer[offset];
-            offset++;
+            offset += command.Length + 1;
 
             var code = SetCode(buffer, offset);
             offset += code.Length;

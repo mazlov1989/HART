@@ -1,4 +1,6 @@
-﻿namespace HART.Connectors
+﻿using HART.EventsArgs;
+
+namespace HART.Connectors
 {
     /// <summary>
     /// Общий интерфейс для реализации подключения к slave-устройствам.
@@ -13,7 +15,7 @@
         /// <summary>
         /// Оповещение о том, что сформированно новое сообщение от slave-устройства.
         /// </summary>
-        event Action DataReceived;
+        event EventHandler<ResponseEventArgs> NewResponse;
 
         /// <summary>
         /// Открыть соединение.
@@ -30,11 +32,5 @@
         /// </summary>
         /// <param name="buffer">Массив передаваемых данных.</param>
         void Request(byte[] buffer);
-
-        /// <summary>
-        /// Получить ответ.
-        /// </summary>
-        /// <returns>Массив полученных данных.</returns>
-        byte[] Response();
     }
 }

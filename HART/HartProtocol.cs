@@ -1,4 +1,5 @@
 ﻿using HART.Connectors;
+using HART.EventsArgs;
 using HART.Messages;
 
 namespace HART
@@ -33,7 +34,7 @@ namespace HART
         /// <summary>
         /// Оповещение о том, что получено новое сообщение от slave-устройства.
         /// </summary>
-        public event Action NewMessage;
+        public event EventHandler<ResponseEventArgs> NewMessage;
 
         /// <summary>
         /// Инициализировать соединение со slave-устройством по HART-протоколу.
@@ -47,7 +48,7 @@ namespace HART
             IsSecondaryMaster = isSecondaryMaster;
             FrameFormat = frameFormat;
 
-            _connector.DataReceived += GetNewMessage;
+            _connector.NewResponse += (_,e) => OnNewResponse(Response.Deserialize(e.BinaryResponse));
         }
 
         /// <summary>
@@ -78,12 +79,9 @@ namespace HART
         public void Request(Request message) => _connector.Request(message.Serialize());
 
         /// <summary>
-        /// Получить новое сообщение.
+        /// Обработчик события <see cref="NewMessage"/>.
         /// </summary>
-        private void GetNewMessage()
-        {
-            Messages.Enqueue(Response.Deserialize(_connector.Response()));
-            NewMessage?.Invoke();
-        }
+        /// <param name="response">Ответ.</param>
+        private void OnNewResponse(Response response) => NewMessage?.Invoke(this, new ResponseEventArgs(response));
     }
 }

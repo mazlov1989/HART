@@ -90,7 +90,38 @@ namespace HART
         /// </summary>
         /// <param name="value">Массив байтов для преобразования.</param>
         /// <returns></returns>
-        private static string FromByteToString(byte[] value) => Encoding.ASCII.GetString(value.Reverse());
+        private static string FromByteToString(byte[] value)
+        {
+            var bitAr = new BitArray(value);
+
+            // TODO: расшифровать:
+
+            /*
+             [0]	4
+             [1]	222
+             [2]	48
+             [3]	194
+             [4]	8
+             [5]	32
+             [6]	64
+             [7]	244
+             [8]	201
+             [9]	80
+             [10]	147
+             [11]	206
+             [12]	21
+             [13]	40
+             [14]	32
+             [15]	130
+             [16]	8
+             [17]	32
+             [18]	15
+             [19]	3
+             [20]	122
+            */
+
+            return Encoding.ASCII.GetString(value.Reverse());
+        }
 
         /// <summary>
         /// Преобразовать <see cref="float"/> в массив байтов.
@@ -201,11 +232,9 @@ namespace HART
         /// <returns></returns>
         private static DateTime FromByteToDate(byte[] value)
         {
-            var date = value.Reverse();
-
-            var day = BitConverter.ToInt32(new byte[] { date[0], 0, 0, 0 }, 0);
-            var month = BitConverter.ToInt32(new byte[] { date[1], 0, 0, 0 }, 0);
-            var year = BitConverter.ToInt32(new byte[] { date[2], 0, 0, 0 }, 0);
+            var day = BitConverter.ToInt32(new byte[] { value[0], 0, 0, 0 }, 0);
+            var month = BitConverter.ToInt32(new byte[] { value[1], 0, 0, 0 }, 0);
+            var year = BitConverter.ToInt32(new byte[] { value[2], 0, 0, 0 }, 0);
 
             return new DateTime(year + 1900, month, day);
         }

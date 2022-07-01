@@ -1,4 +1,5 @@
-﻿using HART.Messages;
+﻿using HART.EventsArgs;
+using HART.Messages;
 
 using System.IO.Ports;
 
@@ -10,7 +11,6 @@ namespace HART.Connectors
     public class SerialPortAdapter : IConnector
     {
         private readonly SerialPort _serialPort;
-        private readonly Queue<byte[]> _receivedData = new();
         private readonly List<byte> _newData = new();
 
         private bool _isPreambleSought;
@@ -51,7 +51,7 @@ namespace HART.Connectors
         /// <summary>
         /// Оповещение о том, что сформированно новое сообщение от slave-устройства.
         /// </summary>
-        public event Action DataReceived;
+        public event EventHandler<ResponseEventArgs> NewResponse;
 
         /// <summary>
         /// Создать серийный порт для подключения.
@@ -129,12 +129,6 @@ namespace HART.Connectors
         /// </summary>
         /// <param name="buffer">Массив передаваемых данных.</param>
         public void Request(byte[] buffer) => _serialPort.Write(buffer, 0, buffer.Length);
-
-        /// <summary>
-        /// Получить ответ.
-        /// </summary>
-        /// <returns>Массив полученных байтов.</returns>
-        public byte[] Response() => _receivedData.Dequeue();
 
         /// <summary>
         /// Обработчик события <see cref="SerialPort.DataReceived"/>.
@@ -246,8 +240,8 @@ namespace HART.Connectors
                 }
 
                 _newData.Add(value);
-                _receivedData.Enqueue(_newData.ToArray());
-                OnDataReceived();
+
+                OnDataReceived(_newData);
                 ResetStatusMessage();
             }
         }
@@ -274,8 +268,10 @@ namespace HART.Connectors
         }
 
         /// <summary>
-        /// Вызывает исполнение делегата <see cref="DataReceived"/>.
+        /// Вызывает исполнение делегата <see cref="NewResponse"/>.
         /// </summary>
-        private void OnDataReceived() => DataReceived?.Invoke();
+        /// <param name="data">Полученные данные</param>
+        private void OnDataReceived(IEnumerable<byte> data) => 
+            NewResponse?.Invoke(this, new ResponseEventArgs(data));
     }
 }

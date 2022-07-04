@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32516.85
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HART", "HART\HART.csproj", "{1434A022-3742-48F2-BD68-EB9FF2A1B05C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HART", "HART\HART.csproj", "{1434A022-3742-48F2-BD68-EB9FF2A1B05C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HART.Tests", "HART.Tests\HART.Tests.csproj", "{F6EE6FE2-4892-4E6F-B027-7C9D092472B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{1434A022-3742-48F2-BD68-EB9FF2A1B05C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1434A022-3742-48F2-BD68-EB9FF2A1B05C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1434A022-3742-48F2-BD68-EB9FF2A1B05C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6EE6FE2-4892-4E6F-B027-7C9D092472B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6EE6FE2-4892-4E6F-B027-7C9D092472B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6EE6FE2-4892-4E6F-B027-7C9D092472B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6EE6FE2-4892-4E6F-B027-7C9D092472B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

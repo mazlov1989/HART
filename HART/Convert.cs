@@ -92,35 +92,29 @@ namespace HART
         /// <returns></returns>
         private static string FromByteToString(byte[] value)
         {
-            var bitAr = new BitArray(value);
+            var bitAr = new BitArray(value.Reverse());
+            var bytes = new List<byte>();
 
-            // TODO: расшифровать:
+            for (var i = 0; i < bitAr.Count; i += 6)
+            {
+                var bits = new bool[8];
 
-            /*
-             [0]	4
-             [1]	222
-             [2]	48
-             [3]	194
-             [4]	8
-             [5]	32
-             [6]	64
-             [7]	244
-             [8]	201
-             [9]	80
-             [10]	147
-             [11]	206
-             [12]	21
-             [13]	40
-             [14]	32
-             [15]	130
-             [16]	8
-             [17]	32
-             [18]	15
-             [19]	3
-             [20]	122
-            */
+                bits[0] = bitAr[0 + i];
+                bits[1] = bitAr[1 + i];
+                bits[2] = bitAr[2 + i];
+                bits[3] = bitAr[3 + i];
+                bits[4] = bitAr[4 + i];
+                bits[5] = bitAr[5 + i];
+                bits[6] = bits[0];
+                bits[7] = false;
 
-            return Encoding.ASCII.GetString(value.Reverse());
+                var b = new byte[1];
+                var ba = new BitArray(bits);
+                ba.CopyTo(b, 0);
+                bytes.Add(b[0]);
+            }
+
+            return Encoding.ASCII.GetString(bytes.ToArray().Reverse()).Trim(' ');
         }
 
         /// <summary>

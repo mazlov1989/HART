@@ -90,31 +90,26 @@ namespace HART
         /// </summary>
         /// <param name="value">Массив байтов для преобразования.</param>
         /// <returns></returns>
-        private static string FromByteToString(byte[] value)
+        private static string FromByteToString(IReadOnlyList<byte> value)
         {
-            var bitAr = new BitArray(value.Reverse());
-            var bytes = new List<byte>();
+            var result = string.Empty;
+            var buffer = new ushort[4];
+            var index = 0;
+            var count = (ushort)(value.Count / 3);
 
-            for (var i = 0; i < bitAr.Count; i += 6)
+            for (var step = 0; step < count; step++)
             {
-                var bits = new bool[8];
+                buffer[0] = (ushort)(value[index] >> 2);
+                buffer[1] = (ushort)(((value[index] << 4) & 0x30) | (value[index + 1] >> 4));
+                buffer[2] = (ushort)(((value[index + 1] << 2) & 0x3C) | (value[index + 2] >> 6));
+                buffer[3] = (ushort)(value[index + 2] & 0x3F);
+                index += 3;
 
-                bits[0] = bitAr[0 + i];
-                bits[1] = bitAr[1 + i];
-                bits[2] = bitAr[2 + i];
-                bits[3] = bitAr[3 + i];
-                bits[4] = bitAr[4 + i];
-                bits[5] = bitAr[5 + i];
-                bits[6] = bits[0];
-                bits[7] = false;
-
-                var b = new byte[1];
-                var ba = new BitArray(bits);
-                ba.CopyTo(b, 0);
-                bytes.Add(b[0]);
+                for (var i = 0; i < 4; i++)
+                    result += (char) (buffer[i] | (ushort) (((buffer[i] & 0x20) << 1) ^ 0x40));
             }
 
-            return Encoding.ASCII.GetString(bytes.ToArray().Reverse()).Trim(' ');
+            return result.Trim(' ');
         }
 
         /// <summary>

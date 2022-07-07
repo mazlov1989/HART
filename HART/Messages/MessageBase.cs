@@ -39,7 +39,7 @@ namespace HART.Messages
         /// <summary>
         /// Количество символов в преамбуле.
         /// </summary>
-        public int Preamble { get; set; }
+        public int Preamble { get; set; } = 8;
 
         /// <summary>
         /// Формат кадра.

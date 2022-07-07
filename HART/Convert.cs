@@ -106,7 +106,7 @@ namespace HART
                 index += 3;
 
                 for (var i = 0; i < 4; i++)
-                    result += (char) (buffer[i] | (ushort) (((buffer[i] & 0x20) << 1) ^ 0x40));
+                    result += (char)(buffer[i] | (ushort)(((buffer[i] & 0x20) << 1) ^ 0x40));
             }
 
             return result.Trim(' ');
@@ -188,7 +188,7 @@ namespace HART
         private static uint FromByteToUInt32(byte[] value)
         {
             var nByte = new byte[4];
-            value.CopyTo(nByte, 0);
+            value.Reverse().CopyTo(nByte, 0);
 
             return BitConverter.ToUInt32(nByte, 0);
         }

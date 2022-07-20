@@ -28,7 +28,7 @@ namespace HART
             Value = value;
             Unit = unit;
         }
-        
+
         /// <summary>
         /// Получить полное наименование единицы измерения.
         /// </summary>
@@ -39,14 +39,14 @@ namespace HART
         /// Получить сокращенное наименование единицы измерения.
         /// </summary>
         /// <returns></returns>
-        public string GetUnitsShortName()=>Unit.GetShortName();
+        public string GetUnitsShortName() => Unit.GetShortName();
 
         /// <summary>
         /// Получить наименование категории единицы измерения.
         /// </summary>
         /// <returns></returns>
         public string GetUnitGroupName() => Unit.GetGroupName();
-        
+
         /// <inheritdoc/>
         public override string ToString() => $"{Value} {Unit.GetShortName()}";
     }

@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using HART.Reference;
+﻿using HART.Reference;
 
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
 namespace HART.Helper
@@ -8,7 +8,7 @@ namespace HART.Helper
     /// <summary>
     /// Сожержит методы расширения для данных типа <see cref="UnitСodes"/>.
     /// </summary>
-    public static class UnitСodesExt
+    internal static class UnitСodesExt
     {
         /// <summary>
         /// Получить поле <see cref="DisplayAttribute.ShortName"/>

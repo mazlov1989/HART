@@ -37,6 +37,11 @@ namespace HART
         public event EventHandler<ResponseEventArgs> NewMessage;
 
         /// <summary>
+        /// Событие появления ошибки связи.
+        /// </summary>
+        public event EventHandler<string> CommunicationError;
+
+        /// <summary>
         /// Инициализировать соединение со slave-устройством по HART-протоколу.
         /// </summary>
         /// <param name="connector">Интерфейс обмена данными между устройствами.</param>
@@ -48,7 +53,8 @@ namespace HART
             IsSecondaryMaster = isSecondaryMaster;
             FrameFormat = frameFormat;
 
-            _connector.NewResponse += (_,e) => OnNewResponse(Response.Deserialize(e.BinaryResponse));
+            _connector.NewResponse += (_, e) => OnNewResponse(Response.Deserialize(e.BinaryResponse));
+            _connector.CommunicationError += OnCommunicationError;
         }
 
         /// <summary>
@@ -83,5 +89,12 @@ namespace HART
         /// </summary>
         /// <param name="response">Ответ.</param>
         private void OnNewResponse(Response response) => NewMessage?.Invoke(this, new ResponseEventArgs(response));
+
+        /// <summary>
+        /// Вызывает исполнение делегата <see cref="CommunicationError"/>.
+        /// </summary>
+        /// <param name="sender">Отправитель.</param>
+        /// <param name="error">Текст ошибки.</param>
+        private void OnCommunicationError(object sender, string error) => CommunicationError?.Invoke(sender, error);
     }
 }

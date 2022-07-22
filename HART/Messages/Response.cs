@@ -29,6 +29,15 @@
         }
 
         /// <summary>
+        /// Создать новое сообщение-ответ об ошибке.
+        /// </summary>
+        /// <param name="error">Текст ошибки.</param>
+        private Response(string error) : base(null)
+        {
+            CommunicationError = error;
+        }
+
+        /// <summary>
         /// Десериализовать ответ.
         /// </summary>
         /// <param name="buffer">Данный для десериализации.</param>
@@ -41,7 +50,7 @@
             offset += preamble;
 
             if (!OddCheck(buffer, offset))
-                throw new ArgumentException("Данные не прошли проверку на нечетность. Контрольная сумма не совпадает.");
+                return new Response(CommunicationErrorList.GetErrorDescription(192));
 
             var limiter = SetLimiter(buffer, offset);
             var frameFormat = SetFrameFormat(limiter);

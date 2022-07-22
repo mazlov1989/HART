@@ -6,12 +6,12 @@ namespace HART
     /// <summary>
     /// Реализует значение с единицей измерения.
     /// </summary>
-    public struct ValueWithUnit
+    public struct ValueWithUnit<T>
     {
         /// <summary>
         /// Величина.
         /// </summary>
-        public decimal Value { get; set; }
+        public T Value { get; set; }
 
         /// <summary>
         /// Единицы измерения.
@@ -23,7 +23,7 @@ namespace HART
         /// </summary>
         /// <param name="value">Значение.</param>
         /// <param name="unit">Единицы измерения.</param>
-        public ValueWithUnit(decimal value, UnitСodes unit)
+        public ValueWithUnit(T value, UnitСodes unit)
         {
             Value = value;
             Unit = unit;

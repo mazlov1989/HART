@@ -30,17 +30,17 @@
             {
                 case 0b0:
                     return NoError;
-                case 0b11000000:
+                case 192:
                     return VerticalParityError;
-                case 0b10100000:
+                case 160:
                     return OverflowError;
-                case 0b10010000:
+                case 144:
                     return FrameError;
-                case 0b10001000:
+                case 136:
                     return HorizontalParityError;
-                case 0b10000010:
+                case 130:
                     return ReceiverBufferOverflow;
-                case 0b10000001:
+                case 129:
                     return Undefined;
             }
 

@@ -32,5 +32,10 @@ namespace HART.Connectors
         /// </summary>
         /// <param name="buffer">Массив передаваемых данных.</param>
         void Request(byte[] buffer);
+
+        /// <summary>
+        /// Событие появления ошибки связи.
+        /// </summary>
+        event EventHandler<string> CommunicationError;
     }
 }

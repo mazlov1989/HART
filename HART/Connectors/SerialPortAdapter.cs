@@ -48,6 +48,9 @@ namespace HART.Connectors
             set => _serialPort.ReadTimeout = value;
         }
 
+        /// <inheritdoc/>
+        public event EventHandler<string> CommunicationError;
+
         /// <summary>
         /// Оповещение о том, что сформированно новое сообщение от slave-устройства.
         /// </summary>
@@ -128,7 +131,17 @@ namespace HART.Connectors
         /// Отправить запрос.
         /// </summary>
         /// <param name="buffer">Массив передаваемых данных.</param>
-        public void Request(byte[] buffer) => _serialPort.Write(buffer, 0, buffer.Length);
+        public void Request(byte[] buffer)
+        {
+            try
+            {
+                _serialPort.Write(buffer, 0, buffer.Length);
+            }
+            catch (Exception ex)
+            {
+                OnCommunicationError(ex.Message);
+            }
+        }
 
         /// <summary>
         /// Обработчик события <see cref="SerialPort.DataReceived"/>.
@@ -271,7 +284,13 @@ namespace HART.Connectors
         /// Вызывает исполнение делегата <see cref="NewResponse"/>.
         /// </summary>
         /// <param name="data">Полученные данные</param>
-        private void OnDataReceived(IEnumerable<byte> data) => 
+        private void OnDataReceived(IEnumerable<byte> data) =>
             NewResponse?.Invoke(this, new ResponseEventArgs(data));
+
+        /// <summary>
+        /// Вызывает исполнение делегата <see cref="CommunicationError"/>.
+        /// </summary>
+        /// <param name="error">Текст ошибки.</param>
+        protected void OnCommunicationError(string error) => CommunicationError?.Invoke(this, error);
     }
 }

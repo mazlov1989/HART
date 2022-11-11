@@ -64,7 +64,7 @@ namespace HART.Connectors
         /// <param name="parity">Протокол контроля чётности.</param>
         /// <param name="dataBits">Число битов данных.</param>
         /// <param name="stopBits">Число стоповых битов в байте.</param>
-        public SerialPortAdapter(int portNumber, int baudRate, Parity parity, int dataBits, StopBits stopBits)
+        public SerialPortAdapter(int portNumber, int baudRate = 1200, Parity parity = Parity.Odd, int dataBits = 8, StopBits stopBits = StopBits.One)
         {
             _serialPort = new SerialPort($"COM{portNumber}", baudRate, parity, dataBits, stopBits)
             {
@@ -75,14 +75,6 @@ namespace HART.Connectors
 
             ReadTimeout = 1000;
             WriteTimeout = 1000;
-        }
-
-        /// <summary>
-        /// Создать серийный порт для подключения.
-        /// </summary>
-        /// <param name="portNumber">Номер порта (цифра после COM, например 1, 2, … Чтобы получилось название порта).</param>
-        public SerialPortAdapter(int portNumber) : this(portNumber, 1200, Parity.Odd, 8, StopBits.One)
-        {
         }
 
         /// <summary>

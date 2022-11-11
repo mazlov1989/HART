@@ -1,6 +1,8 @@
 using HART.Helper;
 using HART.Reference;
 
+using Newtonsoft.Json.Linq;
+
 namespace HART.Tests
 {
     [TestClass]
@@ -51,6 +53,20 @@ namespace HART.Tests
             var expected = "Градусов Цельсия";
             var actual = unit.GetFullName();
 
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void BitmaskTest()
+        {
+            var mask = new Bitmask(2);
+            mask.SetFlag(true, 0);
+            mask.SetFlag(true, 1);
+            mask.SetFlag(true, 2);
+            var result = mask.Get();
+
+            short expected = 7;
+            var actual = BitConverter.ToInt16(result, 0);
             Assert.AreEqual(expected, actual);
         }
     }

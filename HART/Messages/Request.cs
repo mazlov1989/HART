@@ -60,48 +60,27 @@ namespace HART.Messages
         /// <returns>Массив байтов, готовый для отправки по протоколу HART.</returns>
         public byte[] Serialize()
         {
-            var index = 0;
-            var count = 1;
+            var result = new List<byte>();
 
-            var preamble = GetPreamble();
-            count += preamble.Length;
+            result.AddRange(GetPreamble());
+            result.Add(GetLimiter());
+            result.AddRange(Address);
+            result.AddRange(GetCommand());
+            result.Add(GetByteCounter(Data));
 
-            var limiter = GetLimiter();
-            count += limiter.Length;
+            if (Data != null)
+                result.AddRange(Data);
 
-            var address = Address;
-            count += address.Length;
+            result.Add(GetCheckSum(result));
 
-            var command = GetCommand();
-            count += command.Length;
-
-            var data = Data;
-            if (data != null)
-                count += data.Length;
-
-            var byteCounter = GetByteCounter(data);
-            count += byteCounter.Length;
-
-            var result = new byte[count];
-
-            preamble.CopyTo(result, index);
-            limiter.CopyTo(result, index += preamble.Length);
-            address.CopyTo(result, index += limiter.Length);
-            command.CopyTo(result, index += address.Length);
-            data?.CopyTo(result, index += command.Length);
-            byteCounter.CopyTo(result, index += data?.Length ?? command.Length);
-
-            var checkSum = GetCheckSum(result);
-            checkSum.CopyTo(result, index + byteCounter.Length);
-
-            return result;
+            return result.ToArray();
         }
 
         /// <summary>
         /// Сформировтаь преамбулу (<see cref="MessageBase.Preamble"/>) сообщения.
         /// </summary>
         /// <returns>Преамбула в формате массива байтов.</returns>
-        private byte[] GetPreamble()
+        private IEnumerable<byte> GetPreamble()
         {
             if (Preamble <= 0)
                 throw new ArgumentException("Количество символов в преамбуле должно быть большее нуля.");
@@ -118,16 +97,16 @@ namespace HART.Messages
         /// Заполнить ограничитель (<see cref="MessageBase.Limiter"/>) сообщения.
         /// </summary>
         /// <returns>Ограния=читель в формате массива байтов.</returns>
-        private byte[] GetLimiter()
+        private byte GetLimiter()
         {
             Limiter = FrameFormat == FrameFormats.Short ? (byte)0x2 : (byte)0x82;
-            return new[] { Limiter };
+            return Limiter;
         }
 
         /// <summary>
         /// Установить в качестве адреса устройства широковещательный адрес и преобразовать его в массив байтов.
         /// </summary>
-        public static byte[] SetAddress(bool isSecondaryMaster) =>
+        private static byte[] SetAddress(bool isSecondaryMaster) =>
             isSecondaryMaster ? BitConverter.GetBytes(0x80000) : BitConverter.GetBytes(0x00000);
 
         /// <summary>
@@ -136,7 +115,7 @@ namespace HART.Messages
         /// <param name="isSecondaryMaster"><see langword="true"/>, если данное master-устройство вторичное.</param>
         /// <param name="deviceAddress">Адрес устройства.</param>
         /// <returns>Адрес устройства в виде массива байтов.</returns>
-        public static byte[] SetAddress(bool isSecondaryMaster, int deviceAddress)
+        private static byte[] SetAddress(bool isSecondaryMaster, int deviceAddress)
         {
             if (deviceAddress < 0 || deviceAddress > 15)
                 throw new ArgumentOutOfRangeException(nameof(deviceAddress), "В формате короткого кадра адрес прибора должен быть в диапазоне 0..15");
@@ -158,7 +137,7 @@ namespace HART.Messages
         /// <param name="deviceTypeCode">Код типа устройства.</param>
         /// <param name="deviceSerialNumber">Серийный номер устройства.</param>
         /// <returns>Адрес устройства в виде массива байтов.</returns>
-        public static byte[] SetAddress(bool isSecondaryMaster, int manufacturerId, int deviceTypeCode, int deviceSerialNumber)
+        private static byte[] SetAddress(bool isSecondaryMaster, int manufacturerId, int deviceTypeCode, int deviceSerialNumber)
         {
             if (manufacturerId < 0)
                 throw new ArgumentException("Значение ID производителя не должно быть меньше нуля.");
@@ -198,7 +177,7 @@ namespace HART.Messages
         /// Заполнить команду сообщения.
         /// </summary>
         /// <returns>Команда в формате массива байтов.</returns>
-        private byte[] GetCommand()
+        private IEnumerable<byte> GetCommand()
         {
             if (Command < 0 || Command > 65534)
                 throw new ArgumentOutOfRangeException(nameof(Command), "Номер команды должен быть в диапазоне 0..65534");
@@ -226,26 +205,23 @@ namespace HART.Messages
         /// </summary>
         /// <param name="data">Данные для подсчета.</param>
         /// <returns></returns>
-        private static byte[] GetByteCounter(byte[] data)
+        private static byte GetByteCounter(IReadOnlyCollection<byte> data) => data?.Count switch
         {
-            var result = new byte[1];
-
-            if (data != null)
-                result = BitConverter.GetBytes(data.Length);
-
-            return new[] { result[0] };
-        }
+            <= 0 => 0,
+            >= 255 => 255,
+            _ => (byte) (data?.Count ?? 0)
+        };
 
         /// <summary>
         /// Получить контрольную сумму.
         /// </summary>
         /// <param name="data">Данные для просчета.</param>
-        private byte[] GetCheckSum(byte[] data)
+        private byte GetCheckSum(IReadOnlyList<byte> data)
         {
-            var result = new byte[1];
+            byte result = 0;
 
-            for (var i = Preamble; i < data.Length - 1; i++)
-                result[0] ^= data[i];
+            for (var i = Preamble; i < data.Count - 1; i++)
+                result ^= data[i];
 
             return result;
         }

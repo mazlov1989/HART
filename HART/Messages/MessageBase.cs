@@ -20,7 +20,7 @@ namespace HART.Messages
         /// <summary>
         /// Адрес устройства.
         /// </summary>
-        protected byte[] Address;
+        protected readonly byte[] Address;
 
         /// <summary>
         /// Данные.

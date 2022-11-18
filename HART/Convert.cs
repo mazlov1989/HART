@@ -160,7 +160,7 @@ namespace HART
         /// </summary>
         /// <param name="value">Массив байтов для преобразования.</param>
         /// <returns></returns>
-        private static short FromByteToInt16(byte[] value) => System.Convert.ToInt16(FromByteToUInt16(value));
+        private static short FromByteToInt16(byte[] value) => BitConverter.ToInt16(value.Reverse(), 0);
 
         /// <summary>
         /// Преобразовать <see cref="uint"/> в массив байтов.

@@ -11,17 +11,27 @@ namespace HART.Messages
         /// Символ преамбулы.
         /// </summary>
         public const byte PreambleSymbol = 0xFF;
-
+        
         /// <summary>
-        /// Ограничитель.
+        /// Количество символов в преамбуле.
         /// </summary>
-        protected byte Limiter;
+        public int Preamble { get; set; } = 8;
 
         /// <summary>
         /// Адрес устройства.
         /// </summary>
         protected readonly byte[] Address;
+        
+        /// <summary>
+        /// Формат кадра.
+        /// </summary>
+        protected FrameFormats FrameFormat { get; init; }
 
+        /// <summary>
+        /// Команда.
+        /// </summary>
+        public int Command { get; set; }
+        
         /// <summary>
         /// Данные.
         /// </summary>
@@ -35,21 +45,6 @@ namespace HART.Messages
         {
             Address = address;
         }
-
-        /// <summary>
-        /// Количество символов в преамбуле.
-        /// </summary>
-        public int Preamble { get; set; } = 8;
-
-        /// <summary>
-        /// Формат кадра.
-        /// </summary>
-        public FrameFormats FrameFormat { get; protected set; }
-
-        /// <summary>
-        /// Команда.
-        /// </summary>
-        public int Command { get; set; }
 
         /// <summary>
         /// Добавить данные для отправки.

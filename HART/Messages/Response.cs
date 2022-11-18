@@ -71,7 +71,6 @@
             return new Response(address)
             {
                 Preamble = preamble,
-                Limiter = limiter,
                 FrameFormat = frameFormat,
                 IsBatchMode = isBatchMode,
                 Command = Convert.FromByte<int>(command),

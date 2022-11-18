@@ -8,11 +8,6 @@ namespace HART.Messages
     public class Request : MessageBase
     {
         /// <summary>
-        /// <see langword="true"/>, если запрос передает вторичный мастер.
-        /// </summary>
-        public bool IsSecondaryMaster { get; }
-
-        /// <summary>
         /// <see langword="true"/>, если запрос должен передаваться по широковещательному адресу.
         /// </summary>
         public bool IsBroadcastAddress { get; set; }
@@ -24,7 +19,6 @@ namespace HART.Messages
         public Request(bool isSecondaryMaster)
             : base(SetAddress(isSecondaryMaster))
         {
-            IsSecondaryMaster = isSecondaryMaster;
         }
 
         /// <summary>
@@ -36,7 +30,6 @@ namespace HART.Messages
         public Request(bool isSecondaryMaster, int deviceAddress)
             : base(SetAddress(isSecondaryMaster, deviceAddress))
         {
-            IsSecondaryMaster = isSecondaryMaster;
             FrameFormat = FrameFormats.Short;
         }
 
@@ -50,7 +43,6 @@ namespace HART.Messages
         public Request(bool isSecondaryMaster, int manufacturerId, int deviceTypeCode, int deviceSerialNumber)
             : base(SetAddress(isSecondaryMaster, manufacturerId, deviceTypeCode, deviceSerialNumber))
         {
-            IsSecondaryMaster = isSecondaryMaster;
             FrameFormat = FrameFormats.Long;
         }
 
@@ -63,9 +55,9 @@ namespace HART.Messages
             var result = new List<byte>();
 
             result.AddRange(GetPreamble());
-            result.Add(GetLimiter());
+            result.Add(GetLimiter(FrameFormat));
             result.AddRange(Address);
-            result.AddRange(GetCommand());
+            result.AddRange(GetCommand(Command));
             result.Add(GetByteCounter(Data));
 
             if (Data != null)
@@ -94,14 +86,16 @@ namespace HART.Messages
         }
 
         /// <summary>
-        /// Заполнить ограничитель (<see cref="MessageBase.Limiter"/>) сообщения.
+        /// Получить ограничитель сообщения.
         /// </summary>
-        /// <returns>Ограния=читель в формате массива байтов.</returns>
-        private byte GetLimiter()
+        /// <param name="format">Формат кадра.</param>
+        /// <returns>Ограниячитель в формате массива байтов.</returns>
+        private static byte GetLimiter(FrameFormats format) => format switch
         {
-            Limiter = FrameFormat == FrameFormats.Short ? (byte)0x2 : (byte)0x82;
-            return Limiter;
-        }
+            FrameFormats.Short => 0x2,
+            FrameFormats.Long => 0x82,
+            _ => throw new ArgumentOutOfRangeException(nameof(format), "Неверно указан формат кадра")
+        };
 
         /// <summary>
         /// Установить в качестве адреса устройства широковещательный адрес и преобразовать его в массив байтов.
@@ -176,16 +170,17 @@ namespace HART.Messages
         /// <summary>
         /// Заполнить команду сообщения.
         /// </summary>
+        /// <param name="command"></param>
         /// <returns>Команда в формате массива байтов.</returns>
-        private IEnumerable<byte> GetCommand()
+        private static IEnumerable<byte> GetCommand(int command)
         {
-            if (Command < 0 || Command > 65534)
-                throw new ArgumentOutOfRangeException(nameof(Command), "Номер команды должен быть в диапазоне 0..65534");
+            if (command is < 0 or > 65534)
+                throw new ArgumentOutOfRangeException(nameof(command), "Номер команды должен быть в диапазоне 0..65534");
 
             byte[] result;
-            var bCommand = BitConverter.GetBytes(Command);
+            var bCommand = BitConverter.GetBytes(command);
 
-            if (Command <= 255)
+            if (command <= 255)
             {
                 result = new byte[1];
                 result[0] = bCommand[0];
@@ -209,21 +204,13 @@ namespace HART.Messages
         {
             <= 0 => 0,
             >= 255 => 255,
-            _ => (byte) (data?.Count ?? 0)
+            _ => (byte)(data?.Count ?? 0)
         };
 
         /// <summary>
         /// Получить контрольную сумму.
         /// </summary>
         /// <param name="data">Данные для просчета.</param>
-        private byte GetCheckSum(IReadOnlyList<byte> data)
-        {
-            byte result = 0;
-
-            for (var i = Preamble; i < data.Count - 1; i++)
-                result ^= data[i];
-
-            return result;
-        }
+        private static byte GetCheckSum(IEnumerable<byte> data) => data.Aggregate<byte, byte>(0, (current, item) => (byte)(current ^ item));
     }
 }

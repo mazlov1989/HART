@@ -30,24 +30,6 @@ namespace HART.Connectors
         /// </summary>
         public bool IsConnected => _serialPort.IsOpen;
 
-        /// <summary>
-        /// Время ожидания в милисекундах для завершения операции чтения.
-        /// </summary>
-        public int ReadTimeout
-        {
-            get => _serialPort.ReadTimeout;
-            set => _serialPort.ReadTimeout = value;
-        }
-
-        /// <summary>
-        /// Время ожидания в милисекундах для завершения операции чтения.
-        /// </summary>
-        public int WriteTimeout
-        {
-            get => _serialPort.ReadTimeout;
-            set => _serialPort.ReadTimeout = value;
-        }
-
         /// <inheritdoc/>
         public event EventHandler<string> CommunicationError;
 
@@ -72,9 +54,6 @@ namespace HART.Connectors
             };
 
             _serialPort.DataReceived += DataReceivedHandler;
-
-            ReadTimeout = 1000;
-            WriteTimeout = 1000;
         }
 
         /// <summary>
@@ -283,6 +262,6 @@ namespace HART.Connectors
         /// Вызывает исполнение делегата <see cref="CommunicationError"/>.
         /// </summary>
         /// <param name="error">Текст ошибки.</param>
-        protected void OnCommunicationError(string error) => CommunicationError?.Invoke(this, error);
+        private void OnCommunicationError(string error) => CommunicationError?.Invoke(this, error);
     }
 }

@@ -27,6 +27,15 @@ namespace HART.Tests
         }
 
         [TestMethod]
+        public void FromByteToIntTest()
+        {
+            const int expected = int.MaxValue;
+            var actual = Convert.FromByte<int>(Convert.ToByte(expected));
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void UnitGetShortNameTest()
         {
             var unit = Unit—odes.DegreesCelsius;

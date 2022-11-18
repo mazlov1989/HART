@@ -36,6 +36,7 @@ namespace HART
                     double d => ToByte(d),
                     ushort us => ToByte(us),
                     uint ui => ToByte(ui),
+                    int i => ToByte(i),
                     DateTime da => ToByte(da),
                     BitArray b => ToByte(b),
                     _ => throw new ArgumentException($"Преобразование из {typeof(T)} не поддерживается.")
@@ -194,11 +195,23 @@ namespace HART
         }
 
         /// <summary>
+        /// Преобразовать <see cref="uint"/> в массив байтов.
+        /// </summary>
+        /// <param name="value">Данные для преобразования.</param>
+        /// <returns>Массив байтов</returns>
+        private static byte[] ToByte(int value) => BitConverter.GetBytes(value);
+
+        /// <summary>
         /// Преобразовать массив байтов в <see cref="int"/>.
         /// </summary>
         /// <param name="value">Массив байтов для преобразования.</param>
         /// <returns></returns>
-        private static int FromByteToInt32(byte[] value) => System.Convert.ToInt32(FromByteToUInt32(value));
+        private static int FromByteToInt32(byte[] value)
+        {
+            var nByte = new byte[4];
+            value.Reverse().CopyTo(nByte, 0);
+            return BitConverter.ToInt32(value);
+        }
 
         /// <summary>
         /// Преобразовать <see cref="DateTime"/> в массив байтов.

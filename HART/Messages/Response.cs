@@ -73,9 +73,9 @@
                 Preamble = preamble,
                 FrameFormat = frameFormat,
                 IsBatchMode = isBatchMode,
-                Command = Convert.FromByte<int>(command),
+                Command = (int)Convert.FromByte<uint>(command),
                 CommunicationError = CommunicationErrorList.GetErrorDescription(code[0]),
-                ResponseCode = Convert.FromByte<int>(code),
+                ResponseCode = (int)Convert.FromByte<uint>(code),
                 Data = data
             };
         }

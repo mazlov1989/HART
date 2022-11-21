@@ -284,5 +284,44 @@ namespace HART
 
             return reverse;
         }
+
+        /// <summary>
+        /// Распаковать полученные данные типа <see cref="ushort"/>
+        /// </summary>
+        /// <param name="data">Данные.</param>
+        /// <param name="scale">Коэффициент масштаба.</param>
+        /// <returns></returns>
+        public static List<double> Decompress(this IEnumerable<byte> data, double scale)
+        {
+            if (data == null)
+                return null;
+
+            var enumerable = data.ToList();
+            var result = new ushort[(int)(enumerable.Count / 1.5)];
+            var pos = 2;
+
+            foreach (var item in enumerable)
+            {
+                var p = (pos - 2) / 3;
+
+                switch ((pos - 2) % 3)
+                {
+                    case 0:
+                        result[p * 2 + 0] |= item;
+                        break;
+                    case 1:
+                        result[p * 2 + 0] |= (ushort)((item & 15) << 8);
+                        result[p * 2 + 1] |= (ushort)((item >> 4) & 15);
+                        break;
+                    case 2:
+                        result[p * 2 + 1] |= (ushort)(item << 4);
+                        break;
+                }
+
+                pos++;
+            }
+
+            return result.Select(item => item * scale).ToList();
+        }
     }
 }

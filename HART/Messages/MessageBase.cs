@@ -96,7 +96,7 @@ namespace HART.Messages
         /// Получить данные.
         /// </summary>
         /// <returns></returns>
-        public byte[] GetDate() => Data;
+        public IEnumerable<byte> GetDate() => Data;
 
         /// <summary>
         /// Получить адрес устройства.
